@@ -8,13 +8,15 @@ var app     = express();
 var config      = require('./lib/utils/config');
 
 app.configure(function() {
-  app.use(express.static(__dirname + '/public')); // set the static files location /public/img will be /img for users
+  app.use(express.static(__dirname + '/../../front-end')); // set the static files location /public/img will be /img for users
   app.use(express.logger('dev'));                 // log every request to the console
   app.use(express.bodyParser());                  // pull information from html in POST
   app.use(express.methodOverride());              // simulate DELETE and PUT
 });
 
 var initController = require('./controllers/mainController');
+
+console.log(__dirname);
 
 // register main controller endpoints
 initController(app, config);

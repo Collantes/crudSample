@@ -1,0 +1,73 @@
+<html ng-app='app'>
+
+	<header>
+	</header>
+	<body ng-controller='provinciaController'>
+
+		<input ng-model='provincia.descripcion'>		
+		&nbsp;<button ng-click="add(provincia)">add</button>
+		<hr />
+		<ul>
+			<li ng-repeat='provincia in provincias'>
+				<input ng-model='provincia.descripcion'>		
+				&nbsp;<button ng-click="update(provincia)">update</button>
+				&nbsp;||||&nbsp;
+				&nbsp;<button ng-click="del(provincia)">del</button>
+			</li>
+		</ul>
+		&nbsp;<button ng-click="refresh()">refresh</button>
+
+		<script src="https://code.angularjs.org/1.2.21/angular.min.js"></script>
+		<script src="https://code.angularjs.org/1.2.21/angular-resource.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.js"></script>
+	</body>
+
+	<script>
+
+		var root = 'http://localhost:3000/api/';
+
+		var app = angular.module('app', ['ngResource']);
+
+		app.factory('provinciaData', function($resource) {
+			return $resource(
+				root + 'provincias/:id',
+				{ id: '' },
+				{
+					"create": { method: 'post',    params: {id: ''} },
+					"find":   { method: 'get',     params: {id: ''}, isArray: true }, 
+					"read":   { method: 'get',     params: {id: '@id'} }, 
+					"update": { method: 'put',     params: {id: '@id'} }, 
+					"delete": { method: 'delete',  params: {id: '@id'} }
+				}
+			);
+		});
+
+		app.controller('provinciaController', function($scope, provinciaData) {
+
+			$scope.refresh = function() {
+				$scope.provincias = provinciaData.find({len: 50});
+			};
+
+			$scope.del = function(provincia) {
+				provinciaData.delete({id: provincia.id});
+				$scope.refresh();
+			}
+
+			$scope.add = function(provincia) {
+				provinciaData.create({}, _.clone(provincia));
+				$scope.refresh();
+				provincia.descripcion = '';
+			};
+
+			$scope.update = function(provincia) {
+				provinciaData.update({id: provincia.id}, provincia);
+				$scope.refresh();
+			}
+
+			$scope.refresh();
+
+		});
+
+	</script>
+
+</html>
