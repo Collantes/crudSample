@@ -28,8 +28,8 @@
 
 		var app = angular.module('app', ['ngResource']);
 
-		app.factory('provinciaData', function($resource) {
-			return $resource(
+		app.factory('Provincia', function($resource) {
+			var resource = $resource(
 				root + 'provincias/:id',
 				{ id: '' },
 				{
@@ -40,32 +40,53 @@
 					"delete": { method: 'delete',  params: {id: '@id'} }
 				}
 			);
+			return {
+				'find': function(params) {
+					return resource.find(params);
+				},
+
+				'read': function(id) {
+					return resource.read({id: id});
+				},
+
+				'delete': function(entity) {
+					return resource.delete({id: entity.id});
+				},
+				
+				'create': function(entity) {
+					return resource.create({}, _.clone(entity));
+				},
+
+				'update': function(entity) {
+					resource.update({id: entity.id}, _.clone(entity));
+				}
+			};
 		});
 
-		app.controller('provinciaController', function($scope, provinciaData) {
+		app.controller('provinciaController', function($scope, Provincia) {
 
 			$scope.refresh = function() {
-				$scope.provincias = provinciaData.find({len: 50});
+				$scope.provincias = Provincia.find({len: 50});
 			};
 
 			$scope.del = function(provincia) {
-				provinciaData.delete({id: provincia.id});
+				Provincia.delete(provincia);
 				$scope.refresh();
-			}
+			};
 
 			$scope.add = function(provincia) {
-				provinciaData.create({}, _.clone(provincia));
+				Provincia.create(provincia);
 				$scope.refresh();
 				provincia.descripcion = '';
 			};
 
 			$scope.update = function(provincia) {
-				provinciaData.update({id: provincia.id}, provincia);
+				Provincia.update(provincia);
 				$scope.refresh();
-			}
+			};
 
+			//init
 			$scope.refresh();
-
 		});
 
 	</script>
