@@ -16,8 +16,6 @@ app.configure(function() {
 
 var initController = require('./controllers/mainController');
 
-console.log(__dirname);
-
 // register main controller endpoints
 initController(app, config);
 
